@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Code Sync Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #qr-canvas, #reader { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>QR Code Sync Demo</h1>
+    <div>
+        <h2>Generate QR Code</h2>
+        <input id="qr-input" type="text" placeholder="Enter text or URL" value="https://github.com/">
+        <button id="generate">Generate QR Code</button>
+        <br>
+        <canvas id="qr-canvas"></canvas>
+    </div>
+    <hr>
+    <div>
+        <h2>Scan QR Code</h2>
+        <div id="reader" style="width:300px;"></div>
+        <p>Scanned result: <span id="scanned-result"></span></p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.4.1/minified/html5-qrcode.min.js"></script>
+    <script>
+        // Generate QR code
+        const canvas = document.getElementById('qr-canvas');
+        document.getElementById('generate').onclick = () => {
+            const text = document.getElementById('qr-input').value;
+            QRCode.toCanvas(canvas, text, { width: 200 }, function (error) {
+                if (error) alert(error);
+            });
+        };
+
+        // Scan QR code
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById('scanned-result').innerText = decodedText;
+        }
+        const html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            onScanSuccess
+        ).catch(err => {
+            document.getElementById('scanned-result').innerText = "Camera start failed: " + err;
+        });
+    </script>
+</body>
+</html>
